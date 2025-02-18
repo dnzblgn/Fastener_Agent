@@ -1,0 +1,15 @@
+gradio
+torch
+transformers
+langchain
+langchain-community
+langchain-huggingface
+sentence-transformers
+faiss-cpu
+python-docx
+docx2txt
+opencv-python
+numpy
+pandas
+scikit-learn
+matplotlib
