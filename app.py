@@ -168,7 +168,7 @@ def demo():
     retriever, qa_chain, embeddings = initialize_chatbot(create_db(load_documents()))
 
     with gr.Blocks() as app:
-        gr.Markdown("### 🤖 **Multi-Document RAG Chatbot** 📚")
+        gr.Markdown("### 🤖 **Fastener Agent** 📚")
         chatbot = gr.Chatbot()
         query_input = gr.Textbox(label="Ask a question")
         query_btn = gr.Button("Ask")
