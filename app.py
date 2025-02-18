@@ -170,7 +170,7 @@ def demo():
     with gr.Blocks() as app:
         gr.Markdown("### 🤖 **Fastener Agent** 📚")
         chatbot = gr.Chatbot()
-        query_input = gr.Textbox(label="Ask a question")
+        query_input = gr.Textbox(label="Ask me a question")
         query_btn = gr.Button("Ask")
 
         def user_query_handler(query, history):
