@@ -11,44 +11,55 @@ pinned: false
 # Documentation for RAG System with Image Processing
 
 ## Overview
-This system combines Retrieval-Augmented Generation (RAG) with image classification to identify geometric objects and suggest suitable fasteners and manufacturing options. Users upload an image, the system analyzes its features, and a chatbot provides relevant recommendations.
+This system combines **Retrieval-Augmented Generation (RAG)** with **image classification** to recognize geometric shapes and recommend the right fasteners and manufacturing options. Users upload an image, the system analyzes it, and a chatbot provides relevant suggestions.
+
+# Image + RAG System for Fastener Selection
+
+This system helps users identify geometric shapes and find the best fasteners using **RAG** and **image classification**. Users upload an image, the system processes it, and a chatbot retrieves the most relevant information.
 
 ## System Components
 
 ### 1. Image Processing and Classification
-The first step is understanding the geometry of an uploaded image. This is crucial because different geometrical shapes require different fasteners. We use **ResNet50** from the `torchvision.models` library, a well-known deep learning model for image classification, to extract meaningful features from images. These extracted features (embeddings) represent the geometry in a way that makes comparison possible.
+The system first recognizes the geometry of the uploaded image, as different shapes require different fasteners. We use **ResNet50** from `torchvision.models`, a deep learning model for image classification, to extract key features from images. These features, called **embeddings**, allow the system to compare shapes.
 
-To recognize an image, we first create embeddings for a set of reference images (e.g., flat, cylindrical, and complex shapes) using **ResNet50** and **Torch**. These embeddings are numerical representations of the images, capturing their key features. We store them as vectors using `NumPy` for efficient retrieval.
+- The system creates embeddings for reference shapes (e.g., flat, cylindrical, and complex geometries) using **ResNet50** and **Torch**.
+- These embeddings are stored as vectors using `NumPy` for fast and efficient retrieval.
+- When a user uploads an image, the system generates an embedding and compares it to the reference embeddings using **cosine similarity** (`sklearn.metrics.pairwise`).
+- A similarity score close to **1** means a strong match, while a lower score suggests a different shape.
 
-When a user uploads an image, its embedding is generated using the same model and compared with the reference embeddings using **cosine similarity** from the `sklearn.metrics.pairwise` module. Cosine similarity measures the angle between two vectors: a similarity score close to 1 means the uploaded image is very similar to a reference shape, while a lower score means they are different. This helps in identifying the correct geometric classification for the uploaded image.
+To improve accuracy, we use a **Cross-Encoder reranker** (`sentence-transformers/cross-encoder/ms-marco-MiniLM-L-6-v2`), which directly compares query-document pairs to refine the ranking.
 
 ### 2. Document Processing & Retrieval
-Once the image classification determines the geometry, we need to provide relevant information about suitable fasteners. The system processes **.docx documents** containing manufacturing guidelines and fastener recommendations. Since these documents contain a mix of text and tables, we extract text using `python-docx` and structure it into smaller chunks (1500 characters each) for easier retrieval.
+Once the system identifies the shape, it retrieves relevant fastener recommendations from **.docx documents** containing manufacturing guidelines.
 
-To enable fast search, we convert the text chunks into embeddings using `sentence-transformers` and store them in **FAISS (Facebook AI Similarity Search)**, a high-performance vector database. When a user asks a question, the system generates a query embedding using `sentence-transformers` and retrieves the most relevant text chunks using **cosine similarity** in FAISS. Only chunks with a similarity score above 0.5 are considered relevant.
+- **Extracting Text:** The system processes documents using `python-docx` and breaks the text into **1500-character** chunks for easier retrieval.
+- **Creating Embeddings:** Text chunks are converted into embeddings using **`HuggingFaceEmbeddings` (`BAAI/bge-base-en-v1.5`)**.
+- **Vector Search:** These embeddings are stored in **FAISS (Facebook AI Similarity Search)** for fast lookups.
+- **Matching Queries:** When a user asks a question, the system creates an embedding of the query and finds the most relevant text chunks using **cosine similarity** in FAISS.
+- Only chunks with a similarity score above **0.5** are considered relevant.
+
+To further refine results, we use **semantic filtering** and **Cross-Encoder reranking** to ensure only the most useful information is retrieved.
 
 ### 3. Query Validation & Response Generation
-Retrieving relevant text chunks is not enough; we need to ensure they actually answer the user's query. To do this, we use an **LLM (Mistral-7B-Instruct-v0.2)** via `transformers` to generate a final response based on the retrieved documents. The query embedding is passed through **retrieval validation**, where we check if the retrieved documents contain semantically relevant information using `spacy` and `nltk`. If they aren’t relevant, we discard them and provide a fallback response.
+Finding relevant text isn’t enough—we need to make sure it actually answers the user’s question.
 
-The **LLM response generation** takes both the user query and the retrieved documents as context. This ensures that the answer is well-informed and precise, rather than relying solely on generative AI output.
+- **LLM Response Generation:** We use **Falcon-40B-Instruct** via `HuggingFaceEndpoint` to generate answers.
+- **Checking Relevance:** The system checks if the retrieved text matches the question using `sentence-transformers`.
+- **Fallback Handling:** If the system finds no useful information, it ignores irrelevant text and gives a fallback response.
+
+This makes sure the chatbot provides accurate and meaningful answers, not just random AI-generated text.  
+
+The **LLM uses both the user’s question and retrieved documents** to generate a final response. This way, the answer is based on real information instead of making things up.
 
 ### 4. Chatbot & User Interaction
-Users interact with the system through a **Gradio-powered chatbot** (`gradio.Blocks`). The chatbot allows users to:
-1. Upload an image to detect its geometry.
-2. Ask questions about fasteners and manufacturing based on the detected geometry.
-3. Receive responses generated by the **RAG model**, which combines retrieved documents and LLM-generated answers.
+Users talk to the system through a **Gradio chatbot** (`gradio.Blocks`). The chatbot helps users:
 
-The system dynamically updates responses based on user queries, ensuring accurate and informative answers. The chatbot interface is built using **Gradio**, which allows easy integration with different models and seamless user interactions.
+1. **Upload an Image:** The system detects its shape and finds relevant fastener details.
+2. **Ask Questions:** Users can ask about fasteners and manufacturing based on the detected shape.
+3. **Get Answers:** The **RAG model** fetches relevant documents and the LLM generates a response.
 
-### 5. Running the System
-To start the system, run:
-```python
-if __name__ == "__main__":
-    demo()
-```
-This launches the **Gradio interface**, where users can upload images and interact with the chatbot in real time.
+The chatbot updates responses as users interact, making sure the answers stay relevant. **Gradio** makes it easy to connect different models and create a simple, user-friendly chat interface.
 
----
 ### Summary
 - **Image Processing**: Uses `torchvision.models` (ResNet50) to classify geometry and compare embeddings using `sklearn` cosine similarity.
 - **RAG Retrieval**: Uses `sentence-transformers` to convert text into embeddings and FAISS for fast vector retrieval.
