@@ -11,7 +11,7 @@ pinned: false
 # Documentation for RAG System with Image Processing
 
 ## Overview
-This system integrates **Retrieval-Augmented Generation (RAG)** with **image classification** to help users identify geometric objects and retrieve relevant fastener and manufacturing recommendations. The system allows users to upload an image, analyzes its features, and retrieves relevant information using a chatbot interface.
+This system integrates **Retrieval-Augmented Generation (RAG)** with **image classification** to help users identify geometric objects and retrieve relevant fastener and manufacturing recommendations.
 
 ## 1- Image Processing and Feature Extraction
 ResNet50 is modified to serve as a **feature extractor** rather than a classifier. The final classification layer is removed and the model to output a meaningful **feature vector (embedding)** instead of assigning a label. This ensures that the model captures **important patterns in the image** without making predictions.
