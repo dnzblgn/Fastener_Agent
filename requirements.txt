@@ -1,5 +1,6 @@
 gradio
 torch
+torchvision
 transformers
 langchain
 langchain-community
@@ -9,7 +10,10 @@ faiss-cpu
 python-docx
 docx2txt
 opencv-python
+timm
 numpy
 pandas
 scikit-learn
 matplotlib
+Pillow
+rank_bm25
