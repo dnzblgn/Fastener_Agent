@@ -14,11 +14,14 @@ pinned: false
 This system integrates **Retrieval-Augmented Generation (RAG)** with **image classification** to help users identify geometric objects and retrieve relevant fastener and manufacturing recommendations. The system allows users to upload an image, analyzes its features, and retrieves relevant information using a chatbot interface.
 
 ## 1- Image Processing and Feature Extraction
-ResNet50 is modified to serve as a **feature extractor** rather than a classifier. The final classification layer is removed, allowing the model to output a meaningful **feature vector (embedding)** instead of assigning a label. This ensures that the model captures **important patterns in the image** without making predictions.
+ResNet50 is modified to serve as a **feature extractor** rather than a classifier. The final classification layer is removed and the model to output a meaningful **feature vector (embedding)** instead of assigning a label. This ensures that the model captures **important patterns in the image** without making predictions.
 
 To ensure consistent input processing, images are resized to **224×224 pixels**, converted into tensors, and normalized. These preprocessing steps help the model process images effectively and produce consistent embeddings.
 
-Once an image is fed into ResNet50, it outputs a **high-dimensional feature vector** that represents the image's most significant characteristics. This embedding is then converted into a **NumPy array** for compatibility with further computations and storage.
+Once an image is fed into ResNet50, it outputs a **high-dimensional feature vector** that represents the image's most significant characteristics. This embedding is then converted into a **NumPy array** for compatibility with further computations and storage. The following libraries are used in this process:
+- **Torchvision (`torchvision.models`)**: Provides the pre-trained ResNet50 model.
+- **Torch (`torch`)**: Used to process images as tensors and extract feature embeddings.
+- **NumPy (`numpy`)**: Converts extracted embeddings from PyTorch tensors to NumPy arrays for easier storage and further processing.
 
 ## Storing and Retrieving Embeddings
 The extracted embeddings are stored in a **Python dictionary** along with labels describing their geometric classification. Each entry consists of:
